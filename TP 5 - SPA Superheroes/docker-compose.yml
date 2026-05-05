@@ -1,0 +1,28 @@
+services:
+  db:
+    image: mongo:latest
+    container_name: heroes-db
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+      - ./mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+
+  backend:
+    build: ./backend
+    container_name: heroes-back
+    ports:
+      - "3000:3000"
+    depends_on:
+      - db
+    environment:
+      - MONGO_URL=mongodb://db:27017/heroes_db
+
+  frontend:
+    build: ./frontend
+    container_name: heroes-front
+    ports:
+      - "8080:80"
+
+volumes:
+  mongo-data:
